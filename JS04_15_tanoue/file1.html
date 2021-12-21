@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  
+  <link rel="stylesheet" href="css/style.css">
+  
+  <title>読書検索アプリ</title>
+</head>
+<body>
+  <div id="particle-canvas"></div>
+  
+
+  <h1>Book Search</h1>
+
+  <div class="wrapper">
+    <input type="text" id="key">
+    <button id="send" class=btn>Search</button>
+  </div>
+
+  <div class=table>
+    <table id="list" style="display: none;">
+      <tr>
+        <td class="list">書籍名</td>
+        <td class="list">著者</td>
+        <td class="list">ページ数</td>
+        <td class="list">出版社</td>
+        <td class="list">画像</td>
+      </tr>
+
+    </table>
+
+  </div>
+
+
+
+     
+ 
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+
+    // サーチボタンのクリックイベント！
+    $("#send").on("click",function(){
+        const url = "https://www.googleapis.com/books/v1/volumes?q="+$("#key").val(); 
+        $.ajax({
+            url: url,
+            dataType: "json"
+        }).done(function(data) {
+            //書籍名、著者、出版社、ページ数、画像、リンク
+            console.log(data);             
+            //データの中身を確認しにいく！
+            const len = data.items.length; 
+            let html;
+            for(let i=0; i<len; i++){
+                console.log(typeof data.items[i].volumeInfo.publisher);
+                if(typeof data.items[i].volumeInfo.publisher=="undefined"){
+                    data.items[i].volumeInfo.publisher="出版社（不明）";
+                }
+                html += `
+                    <tr>
+                    
+                        <td>${data.items[i].volumeInfo.title}</td>
+                        <td>${data.items[i].volumeInfo.authors}</td>
+                        <td>${data.items[i].volumeInfo.pageCount}</td>
+                        <td>${data.items[i].volumeInfo.publisher}</td>
+                        <td>
+                            <a target="_blank" href="${data.items[i].volumeInfo.infoLink}">
+                                <img src="${data.items[i].volumeInfo.imageLinks.thumbnail}">
+                            </a>
+                        </td>
+                    </tr>
+                `;
+            }
+            //htmlの"list"に追加
+            $("#list").empty().hide().append(html).fadeIn(1000);
+        });
+    });
+
+
+
+  </script> 
+ 
+
+  <script src="js/file.js"></script>
+</body>
+</html>
+
+
+
+
+
